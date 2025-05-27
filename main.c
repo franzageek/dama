@@ -29,7 +29,7 @@ int main(void)
     curr_piece->king = true;
 
     curr_piece->coord.n = piece_dest;
-    curr_piece->coord.y = (curr_piece->coord.n - (curr_piece->coord.n % 4) - ( (curr_piece->coord.n % 4) == 0 ? 4 : 0 ) ) / 4;;
+    curr_piece->coord.y = (curr_piece->coord.n - (curr_piece->coord.n % 4) - ( (curr_piece->coord.n % 4) == 0 ? 4 : 0 ) ) / 4; // subtraction underflows when 0
     curr_piece->coord.x =  (((curr_piece->coord.n % 4) * 2) - 1 - (curr_piece->coord.y % 2 != 0 ? 0 : 1));
     
     piece__possible_moves(curr_piece, board->indexes);
