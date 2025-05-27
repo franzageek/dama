@@ -17,26 +17,23 @@ piece_t* piece__init(void)
         if (i < 12)
         {
             piece[i].player = true;
-            piece[i].y = (i - (i % 4)) / 4; 
-            piece[i].x = (i * 2) % 8 + (
-                piece[i].y % 2 != 0 
-                ? 
-                    1
-                :
-                    0
-            );
+            piece[i].coord.y = (i - (i % 4)) / 4; 
+            piece[i].coord.n = i+1;
         }
         else
         {
-            piece[i].y = ((i - (i % 4)) / 4) + 2; 
-            piece[i].x = (i * 2) % 8 + (
-                piece[i].y % 2 != 0 
-                ? 
-                    1
-                :
-                    0
-            );
+            piece[i].coord.y = ((i - (i % 4)) / 4) + 2; 
+            piece[i].coord.n = i+1+8;
         }
+
+        piece[i].coord.x = (i * 2) % 8 + (
+            piece[i].coord.y % 2 != 0 
+            ? 
+                1
+            :
+                0
+        );
     }
     return piece;
 }
+
