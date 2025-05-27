@@ -23,6 +23,7 @@ piece_t* piece__init(void)
         }
         else
         {
+            piece[i].player = false;
             piece[i].coord.y = ((i - (i % 4)) / 4) + 2; 
             piece[i].coord.n = i+1+8;
         }
@@ -42,22 +43,37 @@ coord_t* piece__possible_moves(piece_t* piece, u8* indexes)
 {
     if (!piece->dama)
     {
-        if (piece->player)
+        if (piece->player == true)
         {
-            u8 delta_nextl = piece->coord.n + ( piece->coord.y % 2 != 0 ? 4 : 3 );
-            if (delta_nextl < 32 && indexes[delta_nextl-1] == 0)
+            u8 nextl = piece->coord.n + ( piece->coord.y % 2 != 0 ? 4 : 3 );
+            if (nextl < 32 && indexes[nextl-1] == 0)
             {
-                u8 a = piece->coord.n;
-                if (a != 1 && a != 9 && a != 17 && a != 25) // hardcode left wall hits -- BAD!!
-                    printf("POSSIBLE: y = %u | x = %u | n = %u\n", 0, 0, delta_nextl);
+                if (piece->coord.n != 1 && piece->coord.n != 9 && piece->coord.n != 17 && piece->coord.n != 25) // hardcode left wall hits -- BAD!!
+                    printf("w POSSIBLE: y = %u | x = %u | n = %u\n", 0, 0, nextl);
                 
             }
-            u8 delta_nextr = piece->coord.n + ( piece->coord.y % 2 != 0 ? 5 : 4 );
-            if (delta_nextr < 32 && indexes[delta_nextr-1 ] == 0)
+            u8 nextr = piece->coord.n + ( piece->coord.y % 2 != 0 ? 5 : 4 );
+            if (nextr < 32 && indexes[nextr-1 ] == 0)
             {
-                u8 b = piece->coord.n;
-                if (b != 8 && b != 16 && b != 24 && b != 32) // same thing -- MOVE UP ONE CONDITION
-                    printf("POSSIBLE: y = %u | x = %u | n = %u\n", 0, 0, delta_nextr);
+                if (piece->coord.n != 8 && piece->coord.n != 16 && piece->coord.n != 24 && piece->coord.n != 32) // same thing -- MOVE UP ONE CONDITION
+                    printf("w POSSIBLE: y = %u | x = %u | n = %u\n", 0, 0, nextr);
+                
+            }
+        }
+        else if (piece->player == false)
+        {
+            u8 nextl = piece->coord.n - ( piece->coord.y % 2 != 0 ? 4 : 5 );
+            if (nextl < 32 && indexes[nextl-1] == 0)
+            {
+                if (piece->coord.n != 1 && piece->coord.n != 9 && piece->coord.n != 17 && piece->coord.n != 25) // hardcode left wall hits -- BAD!!
+                    printf("b POSSIBLE: y = %u | x = %u | n = %u\n", 0, 0, nextl);
+                
+            }
+            u8 nextr = piece->coord.n - ( piece->coord.y % 2 != 0 ? 3 : 4 );
+            if (nextr < 32 && indexes[nextr-1 ] == 0)
+            {
+                if (piece->coord.n != 8 && piece->coord.n != 16 && piece->coord.n != 24 && piece->coord.n != 32) // same thing -- MOVE UP ONE CONDITION
+                    printf("b POSSIBLE: y = %u | x = %u | n = %u\n", 0, 0, nextr);
                 
             }
         }
