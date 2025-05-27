@@ -14,7 +14,7 @@ typedef struct _piece
 {
     coord_t coord;
     u8 player;
-    u8 dama;
+    u8 king;
     u8 valid;
 } __attribute__((packed)) piece_t;
 
