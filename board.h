@@ -6,7 +6,7 @@
 typedef struct _board
 {
     u8 state;
-    u8* presence;
+    u8* indexes;
     piece_t* pieces;
 } board_t;
 

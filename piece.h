@@ -19,5 +19,6 @@ typedef struct _piece
 } __attribute__((packed)) piece_t;
 
 piece_t* piece__init(void);
+coord_t* piece__possible_moves(piece_t* piece, u8* indexes);
 
 #endif

@@ -11,13 +11,17 @@ board_t* board__init(piece_t* pieces)
         perror("calloc()");
         return NULL;
     }
+    u8 j = 1;
     for (u8 i = 0; i < 32; ++i)
     {
         if (i < 12 || i >= 20)
-            presence[i] = true;
+        {
+            presence[i] = j;
+            ++j;
+        }
     }
     board->state = true;
-    board->presence = presence;
+    board->indexes = presence;
     board->pieces = pieces;
     return board;
 }
@@ -25,7 +29,7 @@ board_t* board__init(piece_t* pieces)
 void board__free(board_t* board)
 {
     free(board->pieces);
-    free(board->presence);
+    free(board->indexes);
     free(board);
     return;
 }
