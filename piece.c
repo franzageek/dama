@@ -18,7 +18,7 @@ piece_t* piece__init(void)
         if (i < 12)
         {
             piece[i].player = true;
-            piece[i].coord.y = (i - (i % 4) - ( (i % 4) == 0 ? 4 : 0 ) ) / 4; 
+            piece[i].coord.y = (i - (i % 4)) / 4; 
             piece[i].coord.n = i+1;
         }
         else

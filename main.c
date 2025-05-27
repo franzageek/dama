@@ -15,8 +15,8 @@ int main(void)
     }*/
     //board->indexes[11] = 0;
 
-    u8 piece_src = 23;
-    u8 piece_dest = 20;
+    u8 piece_src = 21;
+    u8 piece_dest = 17;
 
     u8 src_indx = board->indexes[piece_src-1];
 
@@ -33,6 +33,7 @@ int main(void)
     curr_piece->coord.x =  (((curr_piece->coord.n % 4) * 2) - 1 - (curr_piece->coord.y % 2 != 0 ? 0 : 1));
     
     piece__possible_moves(curr_piece, board->indexes);
+    //piece__possible_moves(&board->pieces[11-1], board->indexes);
     board__free(board);
     return 0;
 }
