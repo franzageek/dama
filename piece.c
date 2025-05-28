@@ -6,7 +6,7 @@
 piece_t* piece__init(void)
 {
     piece_t* piece = (piece_t*)calloc(12*2, sizeof(piece_t));
-    if (piece == 0)
+    if (!piece)
     {
         perror("calloc()");
         return NULL;
@@ -43,7 +43,7 @@ coord_t* piece__possible_moves(piece_t* piece, u8* indexes)
 {
     if (!piece->king)
     {
-        if (piece->player == true)
+        if (piece->player)
         {
             u8 nextl = piece->coord.n + ( piece->coord.y % 2 != 0 ? 4 : 3 );
             if (nextl < 32 && indexes[nextl-1] == 0)
@@ -60,7 +60,7 @@ coord_t* piece__possible_moves(piece_t* piece, u8* indexes)
                 
             }
         }
-        else if (piece->player == false)
+        else
         {
             u8 nextl = piece->coord.n - ( piece->coord.y % 2 != 0 ? 4 : 5 );
             if (nextl < 32 && indexes[nextl-1] == 0)
