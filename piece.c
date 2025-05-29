@@ -257,31 +257,9 @@ piece_t* piece__move_piece(coord_t src, coord_t dst, board_t* board)
 
     piece_t* curr_piece = &board->pieces[src_indx - 1];
 
-    curr_piece->coord.n = dst.n;
-    curr_piece->coord.y = 
-    (
-        curr_piece->coord.n - (curr_piece->coord.n % 4) - 
-        ( 
-            (
-                (
-                    curr_piece->coord.n == 0 ?
-                    1 : curr_piece->coord.n
-                ) % 4
-            ) == 0 ? 
-            4 : 0 
-        ) 
-    ) / 4; // [x] subtraction underflows when 0
-    curr_piece->coord.x = 
-    (
-        ((
-            curr_piece->coord.n % 4 == 0 ?
-            4 : curr_piece->coord.n % 4
-        ) * 2) - 1 - 
-        (
-            curr_piece->coord.y % 2 != 0 ? 
-            0 : 1
-        )
-    );
+    coord_t* tmp = coord__gen_xy(dst.n);
+    memmove(&(curr_piece->coord), tmp, sizeof(coord_t));
+    free(tmp);
     return curr_piece;
 }
 
