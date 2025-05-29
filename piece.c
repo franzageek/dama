@@ -180,141 +180,108 @@ piece_t* get_piece_from_n(u8 n, board_t* board)
     );
 }
 
+loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, bool* both, u8 loc, loc_node_t** start_node)
+{
+    loc_node_t** node = start_node;
+    coord_state_t pair0 = calculate_next(aux_coord, board->indexes, loc);
+    if (pair0.coord)
+    {
+        if (pair0.state == STATE_BUSY)
+        {
+            if (get_piece_from_n(pair0.coord->n, board) && get_piece_from_n(pair0.coord->n, board)->player != piece->player)
+            {
+                coord_state_t pair1l = calculate_next(pair0.coord, board->indexes, loc);
+                if (pair1l.coord)
+                {
+                    if (pair1l.state == STATE_FREE)
+                    {
+                        loc_node_t* lnode = NULL;
+                        if (!node)
+                        {
+                            node = (loc_node_t**)malloc(sizeof(loc_node_t*));
+                            if (!node)
+                            {
+                                perror("malloc()");
+                                free(pair1l.coord);
+                                free(pair0.coord);
+                                return NULL;
+                            }
+                            *node = (loc_node_t*)malloc(sizeof(loc_node_t));
+                            if (!*node)
+                            {
+                                perror("malloc()");
+                                free(pair1l.coord);
+                                free(pair0.coord);
+                                free(node);
+                                return NULL;
+                            }
+                            lnode = *node;
+                            *both = false;
+                            lnode->next = piece__possible_captures(piece, board, pair1l.coord, &lnode->has_lr);
+                        }
+                        else
+                        {
+                            if (*node)
+                            {
+                                loc_node_t** sib = (loc_node_t**)malloc(sizeof(loc_node_t*)*2);
+                                if (!sib)
+                                {
+                                    perror("malloc()");
+                                    free(pair1l.coord);
+                                    free(pair0.coord);
+                                    free(*node);
+                                    free(node);
+                                    return NULL;
+                                }
+                                memmove(&sib[0], node, sizeof(loc_node_t*));
+                                free(node);
+                                sib[1] = (loc_node_t*)malloc(sizeof(loc_node_t));
+                                if (!sib[1])
+                                {
+                                    perror("malloc()");
+                                    free(pair1l.coord);
+                                    free(pair0.coord);
+                                    free(sib[0]);
+                                    free(sib);
+                                    return NULL;
+                                }
+                                lnode = sib[1];
+                                node = sib;
+                                *both = true;
+                                lnode->next = piece__possible_captures(piece, board, pair1l.coord, &lnode->has_lr);
+                            }
+                        }
+                        memmove(&lnode->capt, pair0.coord, sizeof(coord_t));
+                        memmove(&lnode->dest, pair1l.coord, sizeof(coord_t));
+                        printf("--can cap %u [%u:%u:%u]--\n", loc, lnode->capt.x, lnode->capt.y, lnode->capt.n);
+                        printf("--can eat %u [%u:%u:%u]--\n", loc, lnode->dest.x, lnode->dest.y, lnode->dest.n);
+                    }
+                    free(pair1l.coord);
+                }
+            }
+        }
+        free(pair0.coord);
+    }
+    return (node == start_node ? NULL : node);
+}
+
 loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, bool* both)
 {
     if (!piece->king)
     {
+        loc_node_t** node = NULL;
         if (piece->player)
         {
-            loc_node_t** node = NULL;
-            coord_state_t pair0 = calculate_next(aux_coord == NULL ? &piece->coord : aux_coord, board->indexes, 0);
-            if (pair0.coord)
-            {
-                if (pair0.state == STATE_BUSY)
-                {
-                    if (get_piece_from_n(pair0.coord->n, board) && !get_piece_from_n(pair0.coord->n, board)->player)
-                    {
-                        coord_state_t pair1l = calculate_next(pair0.coord, board->indexes, 0);
-                        if (pair1l.coord)
-                        {
-                            if (pair1l.state == STATE_FREE)
-                            {
-                                node = (loc_node_t**)malloc(sizeof(loc_node_t*));
-                                if (!node)
-                                {
-                                    perror("malloc()");
-                                    free(pair1l.coord);
-                                    free(pair0.coord);
-                                    return NULL;
-                                }
-                                *node = (loc_node_t*)malloc(sizeof(loc_node_t));
-                                if (!*node)
-                                {
-                                    perror("malloc()");
-                                    free(pair1l.coord);
-                                    free(pair0.coord);
-                                    free(node);
-                                    return NULL;
-                                }
-                                *both = false;
-                                (*node)->next = piece__possible_captures(piece, board, pair1l.coord, &(*node)->has_lr);
-                                memmove(&(*node)->capt, pair0.coord, sizeof(coord_t));
-                                memmove(&(*node)->dest, pair1l.coord, sizeof(coord_t));
-                                printf("--can cap left [%u:%u:%u]--\n", (*node)->capt.x, (*node)->capt.y, (*node)->capt.n);
-                                printf("--can eat left [%u:%u:%u]--\n", (*node)->dest.x, (*node)->dest.y, (*node)->dest.n);
-                            }
-                            free(pair1l.coord);
-                        }
-                    }
-                }
-                free(pair0.coord);
-            }
-            pair0 = calculate_next(aux_coord == NULL ? &piece->coord : aux_coord, board->indexes, 1);
-            if (pair0.coord)
-            {
-                if (pair0.state == STATE_BUSY)
-                {
-                    if (get_piece_from_n(pair0.coord->n, board) && !get_piece_from_n(pair0.coord->n, board)->player)
-                    {
-                        coord_state_t pair1l = calculate_next(pair0.coord, board->indexes, 1);
-                        if (pair1l.coord)
-                        {
-                            if (pair1l.state == STATE_FREE)
-                            {
-                                loc_node_t* lnode = NULL;
-                                if (!node)
-                                {
-                                    node = (loc_node_t**)malloc(sizeof(loc_node_t*));
-                                    if (!node)
-                                    {
-                                        perror("malloc()");
-                                        free(pair1l.coord);
-                                        free(pair0.coord);
-                                        return NULL;
-                                    }
-                                    *node = (loc_node_t*)malloc(sizeof(loc_node_t));
-                                    if (!*node)
-                                    {
-                                        perror("malloc()");
-                                        free(pair1l.coord);
-                                        free(pair0.coord);
-                                        free(node);
-                                        return NULL;
-                                    }
-                                    lnode = *node;
-                                    *both = false;
-                                    lnode->next = piece__possible_captures(piece, board, pair1l.coord, &lnode->has_lr);
-                                }
-                                else
-                                {
-                                    if (*node)
-                                    {
-                                        loc_node_t** sib = (loc_node_t**)malloc(sizeof(loc_node_t*)*2);
-                                        if (!sib)
-                                        {
-                                            perror("malloc()");
-                                            free(pair1l.coord);
-                                            free(pair0.coord);
-                                            free(*node);
-                                            free(node);
-                                            return NULL;
-                                        }
-                                        memmove(&sib[0], node, sizeof(loc_node_t*));
-                                        free(node);
-                                        sib[1] = (loc_node_t*)malloc(sizeof(loc_node_t));
-                                        if (!sib[1])
-                                        {
-                                            perror("malloc()");
-                                            free(pair1l.coord);
-                                            free(pair0.coord);
-                                            free(sib[0]);
-                                            free(sib);
-                                            return NULL;
-                                        }
-                                        lnode = sib[1];
-                                        node = sib;
-                                        *both = true;
-                                        lnode->next = piece__possible_captures(piece, board, pair1l.coord, &lnode->has_lr);
-                                    }
-                                }
-                                memmove(&lnode->capt, pair0.coord, sizeof(coord_t));
-                                memmove(&lnode->dest, pair1l.coord, sizeof(coord_t));
-                                printf("--can cap right [%u:%u:%u]--\n", lnode->capt.x, lnode->capt.y, lnode->capt.n);
-                                printf("--can eat right [%u:%u:%u]--\n", lnode->dest.x, lnode->dest.y, lnode->dest.n);
-                            }
-                            free(pair1l.coord);
-                        }
-                    }
-                }
-                free(pair0.coord);
-            }
+            node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, BTM_LEFT, NULL);
+            node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, BTM_RIGHT, node);
             //TODO: right case
-            return node; //cannot eat
         }
         else //TODO: black player
         {
-
+            node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, TOP_RIGHT, NULL);
+            node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, TOP_LEFT, node);
         }
+        return node; //cannot eat
     }
     else //TODO: king case
     {
