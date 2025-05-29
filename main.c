@@ -15,24 +15,12 @@ int main(void)
     }*/
     //board->indexes[11] = 0;
 
-    u8 piece_src = 22;
-    u8 piece_dest = 19;
-
-    u8 src_indx = board->indexes[piece_src-1];
-
-    board->indexes[piece_dest-1] = src_indx;
-    printf("old piece = %u\n", src_indx);
-    board->indexes[piece_src-1] = 0;
-
-    piece_t* curr_piece = &board->pieces[src_indx - 1];
-
-    curr_piece->king = true;
-
-    curr_piece->coord.n = piece_dest;
-    curr_piece->coord.y = (curr_piece->coord.n - (curr_piece->coord.n % 4) - ( (curr_piece->coord.n % 4) == 0 ? 4 : 0 ) ) / 4; // subtraction underflows when 0
-    curr_piece->coord.x =  (((curr_piece->coord.n % 4) * 2) - 1 - (curr_piece->coord.y % 2 != 0 ? 0 : 1));
-    
-    piece__possible_moves(curr_piece, board->indexes);
+    coord_t s = {3,5,22};
+    coord_t d = {4,4,19};
+    coord_t s1 = {6,2,12};
+    coord_t d1 = {5,3,15};
+    piece__possible_moves(piece__move_piece(s,d, board), board->indexes);
+    piece__possible_moves(piece__move_piece(s1,d1, board), board->indexes);
     //piece__possible_moves(&board->pieces[11-1], board->indexes);
     board__free(board);
     return 0;

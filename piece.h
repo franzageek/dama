@@ -15,5 +15,6 @@ typedef struct _piece
 
 piece_t* piece__init(void);
 coord_t* piece__possible_moves(piece_t* piece, u8* indexes);
+piece_t* piece__move_piece(coord_t src, coord_t dst, board_t* board);
 
 #endif
