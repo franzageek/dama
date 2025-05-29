@@ -262,7 +262,7 @@ loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, bool* 
         }
         free(pair0.coord);
     }
-    return node;
+    return node; //fix leak
 }
 
 loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, bool* both)
@@ -275,12 +275,12 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, BTM_LEFT, NULL);
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, BTM_RIGHT, node);
         }
-        else //TODO: fix mem leak
+        else
         {
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, TOP_RIGHT, NULL);
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, TOP_LEFT, node);
         }
-        return node; //cannot eat
+        return node;
     }
     else //TODO: king case
     {
