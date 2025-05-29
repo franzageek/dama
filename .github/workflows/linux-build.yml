@@ -1,1 +1,27 @@
- 
+name: Linux build with GCC
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Dependencies
+      run: sudo apt-get install -y valgrind build-essential
+
+    - name: Compile C code
+      run: make -j
+
+    - name: Run test
+      run:|
+          sudo valgrind --show-leak-kinds=all --leak-check=full -s ./main
