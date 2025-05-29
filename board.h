@@ -1,7 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "piece.h"
+//#include "piece.h"
 
 typedef struct _board
 {

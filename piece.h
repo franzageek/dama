@@ -1,14 +1,7 @@
 #ifndef PIECE_H
 #define PIECE_H
 
-#include <intdef.h>
-
-typedef struct _coord
-{
-    u8 x;
-    u8 y;
-    u8 n;
-} __attribute__((packed)) coord_t;
+#include "coord.h"
 
 typedef struct _piece
 {
@@ -17,6 +10,8 @@ typedef struct _piece
     u8 king;
     u8 valid;
 } __attribute__((packed)) piece_t;
+
+#include "board.h"
 
 piece_t* piece__init(void);
 coord_t* piece__possible_moves(piece_t* piece, u8* indexes);

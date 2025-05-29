@@ -1,4 +1,4 @@
-#include "board.h"
+#include "piece.h"
 #include <stdlib.h>
 #include <stdio.h>
 

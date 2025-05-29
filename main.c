@@ -15,8 +15,8 @@ int main(void)
     }*/
     //board->indexes[11] = 0;
 
-    u8 piece_src = 21;
-    u8 piece_dest = 17;
+    u8 piece_src = 22;
+    u8 piece_dest = 19;
 
     u8 src_indx = board->indexes[piece_src-1];
 
