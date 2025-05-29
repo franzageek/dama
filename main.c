@@ -22,6 +22,9 @@ int main(void)
     piece__possible_moves(piece__move_piece(s,d, board), board->indexes);
     piece__possible_moves(piece__move_piece(s1,d1, board), board->indexes);
     //piece__possible_moves(&board->pieces[11-1], board->indexes);
+    bool both = false;
+    loc_node_t** chain = piece__possible_captures(piece, board, NULL, &both);
+    piece__free_capture_chain(chain, both);
     board__free(board);
     return 0;
 }
