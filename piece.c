@@ -11,170 +11,85 @@ typedef enum _loc_state
     STATE_OUT_OF_RANGE = 3
 } loc_state_t;
 
+typedef enum _rel_loc_name
+{
+    BTM_LEFT = 0,
+    BTM_RIGHT = 1,
+    TOP_RIGHT = 2,
+    TOP_LEFT = 3
+    /*
+    [3]   [2]
+       [X]
+    [0]   [1]
+    */
+} rel_loc_name_t; // counter-clockwise
+
 typedef struct _coord_bool_pair
 {
     loc_state_t state;
     coord_t* coord;
-} __attribute__((packed)) coord_bool_pair_t;
+} __attribute__((packed)) coord_state_t;
 
-coord_bool_pair_t calculate_ld(coord_t* start, u8* indexes) // a
-{   // TODO: EXPAND TO X,Y,N
-    u8 nextld = start->n + ( start->y % 2 != 0 ? 4 : 3 );
-    if (nextld < 32)
+coord_state_t calculate_next(coord_t* start, u8* indexes, u8 loc) // 
+{   // [x]: EXPAND TO X,Y,N
+    u8 next = 
+    (
+        loc == 0 ?
+            start->n + ( start->y % 2 != 0 ? 4 : 3 )
+        : loc == 1 ?
+            start->n + ( start->y % 2 != 0 ? 5 : 4 )
+        : loc == 2 ?
+            start->n - ( start->y % 2 != 0 ? 3 : 4 )
+        : loc == 3 ?
+            start->n - ( start->y % 2 != 0 ? 4 : 5 )
+        : 32
+    );
+
+    /*
+    
+    [3]   [2]
+       [X]
+    [0]   [1]
+    
+    */
+    if (next < 32)
     {
-        if (start->n != 1 && start->n != 9 && start->n != 17 && start->n != 25) 
+        if 
+        (
+            ((loc == 0 || loc == 3) && start->n != 1 && start->n != 9 && start->n != 17 && start->n != 25)
+            ||
+            ((loc == 1 || loc == 2) && start->n != 8 && start->n != 16 && start->n != 24 && start->n != 32)
+        ) 
         {
-            coord_t* coord_ld = coord__gen_xy(nextld);
-            if (indexes[nextld-1] == 0)
+            coord_t* coord = coord__gen_xy(next);
+            if (indexes[next-1] == 0)
             {
-                printf("[A]POSSIBLE: y = %u | x = %u | n = %u\n", coord_ld->y, coord_ld->x, coord_ld->n);
-                coord_bool_pair_t pair = 
+                printf("[%u]POSSIBLE: y = %u | x = %u | n = %u\n", loc, coord->y, coord->x, coord->n);
+                coord_state_t pair = 
                 {
-                    .coord = coord_ld,
-                    .state = STATE_FREE, //casella vuota
+                    .coord = coord,
+                    .state = STATE_FREE // empty location
                 };
                 return pair;
             }
-            coord_bool_pair_t pair = 
+            coord_state_t pair = 
             {
-                .coord = coord_ld,
-                .state = STATE_BUSY, //casella piena
+                .coord = coord,
+                .state = STATE_BUSY // busy location
             };
             return pair;
         }
-        coord_bool_pair_t pair = 
+        coord_state_t pair = 
         {
             .coord = NULL,
-            .state = STATE_WALL, //muro
+            .state = STATE_WALL // wall
         };
         return pair;
     }
-    coord_bool_pair_t pair = 
+    coord_state_t pair = 
     {
         .coord = NULL,
-        .state = STATE_OUT_OF_RANGE, //fuori dalla schacchiera
-    };
-    return pair;
-}
-
-coord_bool_pair_t calculate_rd(coord_t* start, u8* indexes) // b
-{   // TODO: EXPAND TO X,Y,N
-    u8 nextrd = start->n + ( start->y % 2 != 0 ? 5 : 4 );
-    if (nextrd < 32)
-    {
-        if (start->n != 8 && start->n != 16 && start->n != 24 && start->n != 32) 
-        {
-            coord_t* coord_rd = coord__gen_xy(nextrd);
-            if (indexes[nextrd-1] == 0)
-            {
-                printf("[B]POSSIBLE: y = %u | x = %u | n = %u\n", coord_rd->y, coord_rd->x, coord_rd->n);
-                coord_bool_pair_t pair = 
-                {
-                    .coord = coord_rd,
-                    .state = STATE_FREE, //casella vuota
-                };
-                return pair;
-            }
-            coord_bool_pair_t pair = 
-            {
-                .coord = coord_rd,
-                .state = STATE_BUSY, //casella piena
-            };
-            return pair;
-        }
-        coord_bool_pair_t pair = 
-        {
-            .coord = NULL,
-            .state = STATE_WALL, //muro
-        };
-        return pair;
-    }
-    coord_bool_pair_t pair = 
-    {
-        .coord = NULL,
-        .state = STATE_OUT_OF_RANGE, //fuori dalla schacchiera
-    };
-    return pair;
-}
-
-
-coord_bool_pair_t calculate_ru(coord_t* start, u8* indexes) // c
-{   // TODO: EXPAND TO X,Y,N
-    u8 nextru = start->n - ( start->y % 2 != 0 ? 3 : 4 );
-    if (nextru < 32)
-    {
-        if (start->n != 8 && start->n != 16 && start->n != 24 && start->n != 32) 
-        {
-            coord_t* coord_ru = coord__gen_xy(nextru);
-            if (indexes[nextru-1] == 0)
-            {
-                printf("[C]POSSIBLE: y = %u | x = %u | n = %u\n", coord_ru->y, coord_ru->x, coord_ru->n);
-                coord_bool_pair_t pair = 
-                {
-                    .coord = coord_ru,
-                    .state = STATE_FREE, //casella vuota
-                };
-                return pair;
-            }
-            coord_bool_pair_t pair = 
-            {
-                .coord = coord_ru,
-                .state = STATE_BUSY, //casella piena
-            };
-            return pair;
-        }
-        coord_bool_pair_t pair = 
-        {
-            .coord = NULL,
-            .state = STATE_WALL, //muro
-        };
-        return pair;
-    }
-    coord_bool_pair_t pair = 
-    {
-        .coord = NULL,
-        .state = STATE_OUT_OF_RANGE, //fuori dalla schacchiera
-    };
-    return pair;
-}
-
-
-coord_bool_pair_t calculate_lu(coord_t* start, u8* indexes) // d
-{   // TODO: EXPAND TO X,Y,N
-    u8 nextlu = start->n - ( start->y % 2 != 0 ? 4 : 5 );
-    if (nextlu < 32)
-    {
-        if (start->n != 1 && start->n != 9 && start->n != 17 && start->n != 25) 
-        {
-            coord_t* coord_lu = coord__gen_xy(nextlu);
-            if (indexes[nextlu-1] == 0)
-            {
-                printf("[D]POSSIBLE: y = %u | x = %u | n = %u\n", coord_lu->y, coord_lu->x, coord_lu->n);
-                coord_bool_pair_t pair = 
-                {
-                    .coord = coord_lu,
-                    .state = STATE_FREE, //casella vuota
-                };
-                return pair;
-            }
-            coord_bool_pair_t pair = 
-            {
-                .coord = coord_lu,
-                .state = STATE_BUSY, //casella piena
-            };
-            return pair;
-        }
-        coord_bool_pair_t pair = 
-        {
-            .coord = NULL,
-            .state = STATE_WALL, //muro
-        };
-        return pair;
-    }
-    coord_bool_pair_t pair = 
-    {
-        .coord = NULL,
-        .state = STATE_OUT_OF_RANGE, //fuori dalla schacchiera
+        .state = STATE_OUT_OF_RANGE // out of the checkboard
     };
     return pair;
 }
@@ -220,21 +135,21 @@ coord_t* piece__possible_moves(piece_t* piece, u8* indexes)
     {
         if (piece->player)
         {
-            free(calculate_ld(&piece->coord, indexes).coord);
-            free(calculate_rd(&piece->coord, indexes).coord);
+            free(calculate_next(&piece->coord, indexes, 0).coord);
+            free(calculate_next(&piece->coord, indexes, 1).coord);
         }
         else
         {
-            free(calculate_lu(&piece->coord, indexes).coord);
-            free(calculate_ru(&piece->coord, indexes).coord);
+            free(calculate_next(&piece->coord, indexes, 2).coord);
+            free(calculate_next(&piece->coord, indexes, 3).coord);
         }
     }
     else
     {
-        free(calculate_ld(&piece->coord, indexes).coord);
-        free(calculate_rd(&piece->coord, indexes).coord);
-        free(calculate_lu(&piece->coord, indexes).coord);
-        free(calculate_ru(&piece->coord, indexes).coord);
+        free(calculate_next(&piece->coord, indexes, 0).coord);
+        free(calculate_next(&piece->coord, indexes, 1).coord);
+        free(calculate_next(&piece->coord, indexes, 2).coord);
+        free(calculate_next(&piece->coord, indexes, 3).coord);
     }
     return NULL;
 }
@@ -265,90 +180,6 @@ piece_t* get_piece_from_n(u8 n, board_t* board)
     );
 }
 
-/*
-void rec_check_ld(coord_t* coord, u8* indexes, u8 level)
-{
-    if (level < 10)
-    {
-        coord_bool_pair_t pair = calculate_ld(coord, indexes);
-        if (!pair.state && pair.coord != NULL)
-        {
-            rec_check_ld(&pair.coord, indexes);
-        }
-    }
-}
-
-coord_t** calculate_possible_captures(piece_t* piece, board_t* board)
-{
-    coord_t** capt_list = (coord_t**)malloc(sizeof(coord_t*));
-    if (!capt_list)
-    {
-        perror("malloc()");
-        return NULL;
-    }
-
-} */
-/*
-loc_node_t* piece__can_eat(piece_t* piece, board_t* board, coord_t* aux_coord, loc_node_t* prev)
-{
-    if(!piece->king)    
-    {
-        if(piece->player)
-        {
-            coord_bool_pair_t pair = calculate_ld(aux_coord, board->indexes);
-            if (pair.coord)
-            {
-                if (pair.state == STATE_BUSY)
-                {
-                    if (get_piece_from_n(pair.coord->n, board) && !get_piece_from_n(pair.coord->n, board)->player)
-                    {
-                        loc_node_t* lnode = NULL;
-                        coord_bool_pair_t pair1 = calculate_ld(&pair.coord, board->indexes);
-                        if (pair1.coord)
-                        {
-                            if (pair1.state == STATE_FREE)
-                            {
-                                lnode = (loc_node_t*)malloc(sizeof(loc_node_t));
-                                if (!lnode)
-                                {
-                                    perror("malloc()");
-                                    return NULL;
-                                }
-                                memmove(&lnode->dest, pair1.coord, sizeof(coord_t));
-                                memmove(&lnode->captured, pair.coord, sizeof(coord_t));
-                                lnode->next = piece__can_eat(piece, board, &pair1.coord, lnode);
-                                lnode->prev = prev;
-                            }
-                            free(pair1.coord);
-                        }
-                        pair1 = calculate_rd(&pair.coord, board->indexes);
-                        if (pair1.coord)
-                        {
-                            if (pair1.state == STATE_FREE)
-                            {
-                                if (lnode)
-                                lnode = (loc_node_t*)malloc(sizeof(loc_node_t));
-                                if (!lnode)
-                                {
-                                    perror("malloc()");
-                                    return NULL;
-                                }
-                                memmove(&lnode->dest, pair1.coord, sizeof(coord_t));
-                                memmove(&lnode->captured, pair.coord, sizeof(coord_t));
-                                lnode->next = piece__can_eat(piece, board, &pair1.coord, lnode);
-                                lnode->prev = prev;
-                            }
-                            free(pair1.coord);
-                        }
-                    }
-                }
-                free(pair.coord);
-            }
-        }
-    }
-}*/
-
-
 loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, bool* both)
 {
     if (!piece->king)
@@ -356,14 +187,14 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
         if (piece->player)
         {
             loc_node_t** node = NULL;
-            coord_bool_pair_t pair0 = calculate_ld(aux_coord == NULL ? &piece->coord : aux_coord, board->indexes);
+            coord_state_t pair0 = calculate_next(aux_coord == NULL ? &piece->coord : aux_coord, board->indexes, 0);
             if (pair0.coord)
             {
                 if (pair0.state == STATE_BUSY)
                 {
                     if (get_piece_from_n(pair0.coord->n, board) && !get_piece_from_n(pair0.coord->n, board)->player)
                     {
-                        coord_bool_pair_t pair1l = calculate_ld(pair0.coord, board->indexes);
+                        coord_state_t pair1l = calculate_next(pair0.coord, board->indexes, 0);
                         if (pair1l.coord)
                         {
                             if (pair1l.state == STATE_FREE)
@@ -389,8 +220,8 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
                                 (*node)->next = piece__possible_captures(piece, board, pair1l.coord, &(*node)->has_lr);
                                 memmove(&(*node)->capt, pair0.coord, sizeof(coord_t));
                                 memmove(&(*node)->dest, pair1l.coord, sizeof(coord_t));
-                                printf("--can cap left [%u:%u:%u]--\n", pair0.coord->x, pair0.coord->y, pair0.coord->n);
-                                printf("--can eat left [%u:%u:%u]--\n", pair1l.coord->x, pair1l.coord->y, pair1l.coord->n);
+                                printf("--can cap left [%u:%u:%u]--\n", (*node)->capt.x, (*node)->capt.y, (*node)->capt.n);
+                                printf("--can eat left [%u:%u:%u]--\n", (*node)->dest.x, (*node)->dest.y, (*node)->dest.n);
                             }
                             free(pair1l.coord);
                         }
@@ -398,14 +229,14 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
                 }
                 free(pair0.coord);
             }
-            pair0 = calculate_rd(aux_coord == NULL ? &piece->coord : aux_coord, board->indexes);
+            pair0 = calculate_next(aux_coord == NULL ? &piece->coord : aux_coord, board->indexes, 1);
             if (pair0.coord)
             {
                 if (pair0.state == STATE_BUSY)
                 {
                     if (get_piece_from_n(pair0.coord->n, board) && !get_piece_from_n(pair0.coord->n, board)->player)
                     {
-                        coord_bool_pair_t pair1l = calculate_rd(pair0.coord, board->indexes);
+                        coord_state_t pair1l = calculate_next(pair0.coord, board->indexes, 1);
                         if (pair1l.coord)
                         {
                             if (pair1l.state == STATE_FREE)
@@ -468,8 +299,8 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
                                 }
                                 memmove(&lnode->capt, pair0.coord, sizeof(coord_t));
                                 memmove(&lnode->dest, pair1l.coord, sizeof(coord_t));
-                                printf("--can cap right [%u:%u:%u]--\n", pair0.coord->x, pair0.coord->y, pair0.coord->n);
-                                printf("--can eat right [%u:%u:%u]--\n", pair1l.coord->x, pair1l.coord->y, pair1l.coord->n);
+                                printf("--can cap right [%u:%u:%u]--\n", lnode->capt.x, lnode->capt.y, lnode->capt.n);
+                                printf("--can eat right [%u:%u:%u]--\n", lnode->dest.x, lnode->dest.y, lnode->dest.n);
                             }
                             free(pair1l.coord);
                         }
@@ -497,16 +328,16 @@ void piece__free_capture_chain(loc_node_t** chain, bool both)
     if (chain)
     {
         if (chain[0]->next)
-        {
-            printf("freeing DST[%u,%u,%u] CAP[%u,%u,%u]\n", chain[0]->dest.x, chain[0]->dest.y, chain[0]->dest.n, chain[0]->capt.x, chain[0]->capt.y, chain[0]->capt.n);
             piece__free_capture_chain(chain[0]->next, chain[0]->has_lr);
-        }
         
+        printf("freeing DST[%u,%u,%u] CAP[%u,%u,%u]\n", chain[0]->dest.x, chain[0]->dest.y, chain[0]->dest.n, chain[0]->capt.x, chain[0]->capt.y, chain[0]->capt.n);
         free(chain[0]);
         if (both)
         {
+            if (chain[1]->next)
+                piece__free_capture_chain(chain[1]->next, chain[1]->has_lr);
+            
             printf("freeing DST[%u,%u,%u] CAP[%u,%u,%u]\n", chain[1]->dest.x, chain[1]->dest.y, chain[1]->dest.n, chain[1]->capt.x, chain[1]->capt.y, chain[1]->capt.n);
-            piece__free_capture_chain(chain[1]->next, chain[1]->has_lr);
             free(chain[1]);
         }
         free(chain);
