@@ -274,9 +274,8 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
         {
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, BTM_LEFT, NULL);
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, BTM_RIGHT, node);
-            //TODO: right case
         }
-        else //TODO: black player
+        else //TODO: fix mem leak
         {
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, TOP_RIGHT, NULL);
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, TOP_LEFT, node);
