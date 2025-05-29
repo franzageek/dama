@@ -262,7 +262,7 @@ loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, bool* 
         }
         free(pair0.coord);
     }
-    return (node == start_node ? NULL : node);
+    return node;
 }
 
 loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, bool* both)
