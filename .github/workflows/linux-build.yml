@@ -3,10 +3,10 @@ name: Linux build with GCC
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build:
