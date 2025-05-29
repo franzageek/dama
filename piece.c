@@ -17,14 +17,6 @@ typedef struct _coord_bool_pair
     coord_t* coord;
 } __attribute__((packed)) coord_bool_pair_t;
 
-typedef struct _loc_node
-{
-    coord_t dest;
-    coord_t capt;
-    struct _loc_node** next;
-    bool has_lr;
-} loc_node_t;
-
 coord_bool_pair_t calculate_ld(coord_t* start, u8* indexes) // a
 {   // TODO: EXPAND TO X,Y,N
     u8 nextld = start->n + ( start->y % 2 != 0 ? 4 : 3 );
@@ -364,7 +356,7 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
         if (piece->player)
         {
             loc_node_t** node = NULL;
-            coord_bool_pair_t pair0 = calculate_ld(aux_coord, board->indexes);
+            coord_bool_pair_t pair0 = calculate_ld(aux_coord == NULL ? &piece->coord : aux_coord, board->indexes);
             if (pair0.coord)
             {
                 if (pair0.state == STATE_BUSY)
@@ -397,6 +389,8 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
                                 (*node)->next = piece__possible_captures(piece, board, pair1l.coord, &(*node)->has_lr);
                                 memmove(&(*node)->capt, pair0.coord, sizeof(coord_t));
                                 memmove(&(*node)->dest, pair1l.coord, sizeof(coord_t));
+                                printf("--can cap left [%u:%u:%u]--\n", pair0.coord->x, pair0.coord->y, pair0.coord->n);
+                                printf("--can eat left [%u:%u:%u]--\n", pair1l.coord->x, pair1l.coord->y, pair1l.coord->n);
                             }
                             free(pair1l.coord);
                         }
@@ -404,7 +398,7 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
                 }
                 free(pair0.coord);
             }
-            pair0 = calculate_rd(aux_coord, board->indexes);
+            pair0 = calculate_rd(aux_coord == NULL ? &piece->coord : aux_coord, board->indexes);
             if (pair0.coord)
             {
                 if (pair0.state == STATE_BUSY)
@@ -474,6 +468,8 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
                                 }
                                 memmove(&lnode->capt, pair0.coord, sizeof(coord_t));
                                 memmove(&lnode->dest, pair1l.coord, sizeof(coord_t));
+                                printf("--can cap right [%u:%u:%u]--\n", pair0.coord->x, pair0.coord->y, pair0.coord->n);
+                                printf("--can eat right [%u:%u:%u]--\n", pair1l.coord->x, pair1l.coord->y, pair1l.coord->n);
                             }
                             free(pair1l.coord);
                         }
@@ -494,4 +490,26 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
 
     }
     return NULL;
+}
+
+void piece__free_capture_chain(loc_node_t** chain, bool both)
+{
+    if (chain)
+    {
+        if (chain[0]->next)
+        {
+            printf("freeing DST[%u,%u,%u] CAP[%u,%u,%u]\n", chain[0]->dest.x, chain[0]->dest.y, chain[0]->dest.n, chain[0]->capt.x, chain[0]->capt.y, chain[0]->capt.n);
+            piece__free_capture_chain(chain[0]->next, chain[0]->has_lr);
+        }
+        
+        free(chain[0]);
+        if (both)
+        {
+            printf("freeing DST[%u,%u,%u] CAP[%u,%u,%u]\n", chain[1]->dest.x, chain[1]->dest.y, chain[1]->dest.n, chain[1]->capt.x, chain[1]->capt.y, chain[1]->capt.n);
+            piece__free_capture_chain(chain[1]->next, chain[1]->has_lr);
+            free(chain[1]);
+        }
+        free(chain);
+    }
+    return;
 }
