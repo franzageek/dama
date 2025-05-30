@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "piece.h"
 #include "board.h"
+#include "ui.h"
 
 int main(void)
 {
@@ -15,6 +16,13 @@ int main(void)
     }*/
     //board->indexes[11] = 0;
 
+    if (!ui__SDL3_init())
+    {
+        board__free(board);
+        return 1;
+    }
+    ui__loop();
+    ui__quit_SDL3();
     piece_t* piece = piece__move_piece(coord__from_xyn(3,5,22),coord__from_xyn(4,4,19), board);
     piece_t* piece1 = piece__move_piece(coord__from_xyn(6,2,12), coord__from_xyn(5,3,15), board);
     piece_t* piece2 = piece__move_piece(coord__from_xyn(7,5,24), coord__from_xyn(4,6,20), board);

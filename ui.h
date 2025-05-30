@@ -1,0 +1,16 @@
+#ifndef UI_H
+#define UI_H
+
+#include <intdef.h> 
+
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 640
+#define BOARD_SIZE 8
+#define CELL_SIZE (WINDOW_WIDTH/BOARD_SIZE)
+
+bool ui__SDL3_init(void);
+void ui__quit_SDL3(void);
+void ui__draw_board(void);
+void ui__loop(void);
+
+#endif
