@@ -17,3 +17,9 @@ typedef int64_t i64;
 #ifndef false
 #define false 0
 #endif
+
+#ifdef DEBUG    
+#define debug(cmd...) cmd
+#else
+#define debug(cmd...)
+#endif
