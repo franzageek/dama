@@ -48,7 +48,7 @@ coord_state_t calculate_next(coord_t* start, u8* indexes, u8 loc) //
             ((loc == 1 || loc == 2) && start->n != 8 && start->n != 16 && start->n != 24 && start->n != 32)
         ) 
         {
-            coord_t coord = coord__gen_n_from_xy(next);
+            coord_t coord = coord__from_n(next);
             if (indexes[next-1] == 0)
             {
                 printf("[%u]POSSIBLE: y = %u | x = %u | n = %u\n", loc, coord.y, coord.x, coord.n);
@@ -151,7 +151,7 @@ piece_t* piece__move_piece(coord_t src, coord_t dst, board_t* board)
 
     piece_t* curr_piece = &board->pieces[src_indx - 1];
 
-    coord_t tmp = coord__gen_n_from_xy(dst.n);
+    coord_t tmp = coord__from_n(dst.n);
     memmove(&(curr_piece->coord), &tmp, sizeof(coord_t));
     return curr_piece;
 }

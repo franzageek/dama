@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-coord_t coord__gen_n_from_xy(u8 n)
+coord_t coord__from_n(u8 n)
 {
     coord_t coord = {0};
     coord.n = n;
