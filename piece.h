@@ -16,7 +16,7 @@ typedef struct _loc_node
     coord_t dest;
     coord_t capt;
     struct _loc_node** next;
-    bool has_lr;
+    u8 has_lr;
 } loc_node_t;
 
 #include "board.h"
