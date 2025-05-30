@@ -1,3 +1,6 @@
+#ifndef __INTDEF_H__
+#define __INTDEF_H__
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -22,4 +25,6 @@ typedef int64_t i64;
 #define debug(cmd...) cmd
 #else
 #define debug(cmd...)
+#endif
+
 #endif
