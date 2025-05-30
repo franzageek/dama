@@ -34,6 +34,20 @@ coord_t coord__from_n(u8 n)
     return coord;
 }
 
+coord_t coord__from_xy(u8 x, u8 y)
+{
+    coord_t coord = {0};
+    coord.x = x;
+    coord.y = y;
+    coord.n = (y * 4) + 
+    (
+        y % 2 != 0 ?
+        (x + 1) / 2
+        : (x / 2) +1
+    );
+    return coord;
+}
+
 coord_t coord__from_xyn(u8 x, u8 y, u8 n)
 {
     coord_t coord = {x,y,n};
