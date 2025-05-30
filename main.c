@@ -21,9 +21,11 @@ int main(void)
         board__free(board);
         return 1;
     }
-    ui__loop();
-    ui__quit_SDL3();
+    board->pieces[4].king = true;
+    board->pieces[21].king = true;
     piece_t* piece = piece__move_piece(coord__from_xyn(3,5,22),coord__from_xyn(4,4,19), board);
+    ui__loop(board);
+    ui__quit_SDL3();
     piece_t* piece1 = piece__move_piece(coord__from_xyn(6,2,12), coord__from_xyn(5,3,15), board);
     piece_t* piece2 = piece__move_piece(coord__from_xyn(7,5,24), coord__from_xyn(4,6,20), board);
     piece__move_piece(coord__from_xyn(7,1,8), coord__from_xyn(6,2,12), board);
