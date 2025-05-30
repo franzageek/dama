@@ -15,16 +15,20 @@ int main(void)
     }*/
     //board->indexes[11] = 0;
 
-    coord_t s = {3,5,22};
-    coord_t d = {4,4,19};
-    coord_t s1 = {6,2,12};
-    coord_t d1 = {5,3,15};
-    piece__possible_moves(piece__move_piece(s,d, board), board->indexes);
-    piece__possible_moves(piece__move_piece(s1,d1, board), board->indexes);
-    //piece__possible_moves(&board->pieces[11-1], board->indexes);
+    piece_t* piece = piece__move_piece(coord__from_xyn(3,5,22),coord__from_xyn(4,4,19), board);
+    piece_t* piece1 = piece__move_piece(coord__from_xyn(6,2,12), coord__from_xyn(5,3,15), board);
+    piece_t* piece2 = piece__move_piece(coord__from_xyn(7,5,24), coord__from_xyn(4,6,20), board);
+
+    printf("0--%u:%u:%u\n", piece->coord.x, piece->coord.y, piece->coord.n);
+    printf("1--%u:%u:%u\n", piece1->coord.x, piece1->coord.y, piece1->coord.n);
+    printf("2--%u:%u:%u\n", piece2->coord.x, piece2->coord.y, piece2->coord.n);
+    piece__possible_moves(piece, board->indexes);
+    piece__possible_moves(piece1, board->indexes);
+    piece__possible_moves(piece2, board->indexes);
     bool both = false;
-    loc_node_t** chain = piece__possible_captures(&board->pieces[board->indexes[d.n-1]-1], board, NULL, &both);
+    loc_node_t** chain = piece__possible_captures(piece1, board, NULL, &both);
     piece__free_capture_chain(chain, both);
+    //piece__possible_moves(&board->pieces[11-1], board->indexes);
     board__free(board);
     return 0;
 }

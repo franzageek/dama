@@ -34,7 +34,7 @@ coord_t coord__gen_n_from_xy(u8 n)
     return coord;
 }
 
-coord_t coord__gen_struct_from_xyn(u8 x, u8 y, u8 n)
+coord_t coord__from_xyn(u8 x, u8 y, u8 n)
 {
     coord_t coord = {x,y,n};
     return coord;
