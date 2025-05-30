@@ -11,7 +11,7 @@ typedef enum _loc_state
     STATE_OUT_OF_RANGE = 3
 } loc_state_t;
 
-typedef struct _coord_bool_pair
+typedef struct _coord_state
 {
     loc_state_t state;
     coord_t coord;
@@ -51,7 +51,7 @@ coord_state_t calculate_next(coord_t* start, u8* indexes, u8 loc) //
             coord_t coord = coord__from_n(next);
             if (indexes[next-1] == 0)
             {
-                printf("[%u]POSSIBLE: y = %u | x = %u | n = %u\n", loc, coord.y, coord.x, coord.n);
+                debug(printf("possible move towards {%u}: [y = %u | x = %u | n = %u]\n", loc, coord.y, coord.x, coord.n));
                 coord_state_t pair = 
                 {
                     .coord = coord,
@@ -116,29 +116,91 @@ piece_t* piece__init(void)
     return piece;
 }
 
-coord_t* piece__possible_moves(piece_t* piece, u8* indexes)
+void grow_coord_vec(coord_vec_t* vec, coord_t* coord, u8 loc, u8* indexes)
 {
+    coord_state_t state = calculate_next(coord, indexes, loc);
+    if (!coord__is_null(state.coord) && state.state == STATE_FREE)
+    {
+        vec->table[vec->len] = (coord_t*)malloc(sizeof(coord_t));
+        memmove(vec->table[vec->len], &state.coord, sizeof(coord_t));
+        ++vec->len;
+    }
+    return;
+}
+
+coord_vec_t* piece__possible_moves(piece_t* piece, u8* indexes)
+{
+    coord_vec_t* vec = NULL;
     if (!piece->king)
     {
         if (piece->player)
         {
-            calculate_next(&piece->coord, indexes, BTM_LEFT);
-            calculate_next(&piece->coord, indexes, BTM_RIGHT);
+            vec = (coord_vec_t*)malloc(sizeof(coord_vec_t));
+            if (!vec)
+            {
+                perror("malloc()");
+                return NULL;
+            }
+            vec->table = (coord_t**)malloc(2*sizeof(coord_t*));
+            if (!vec->table)
+            {
+                perror("malloc()");
+                return NULL;
+            }
+            vec->len = 0;
+            grow_coord_vec(vec, &piece->coord, BTM_LEFT, indexes);
+            grow_coord_vec(vec, &piece->coord, BTM_RIGHT, indexes);
         }
         else
         {
-            calculate_next(&piece->coord, indexes, TOP_RIGHT);
-            calculate_next(&piece->coord, indexes, TOP_LEFT);
+            vec = (coord_vec_t*)malloc(sizeof(coord_vec_t));
+            if (!vec)
+            {
+                perror("malloc()");
+                return NULL;
+            }
+            vec->table = (coord_t**)malloc(2*sizeof(coord_t*));
+            if (!vec->table)
+            {
+                perror("malloc()");
+                return NULL;
+            }
+            vec->len = 0;
+            grow_coord_vec(vec, &piece->coord, TOP_RIGHT, indexes);
+            grow_coord_vec(vec, &piece->coord, TOP_LEFT, indexes);
         }
     }
     else
     {
-        calculate_next(&piece->coord, indexes, BTM_LEFT);
-        calculate_next(&piece->coord, indexes, BTM_RIGHT);
-        calculate_next(&piece->coord, indexes, TOP_RIGHT);
-        calculate_next(&piece->coord, indexes, TOP_LEFT);
+        vec = (coord_vec_t*)malloc(sizeof(coord_vec_t));
+        if (!vec)
+        {
+            perror("malloc()");
+            return NULL;
+        }
+        vec->table = (coord_t**)malloc(4*sizeof(coord_t*));
+        if (!vec->table)
+        {
+            perror("malloc()");
+            return NULL;
+        }
+        vec->len = 0;
+        grow_coord_vec(vec, &piece->coord, BTM_LEFT, indexes);
+        grow_coord_vec(vec, &piece->coord, BTM_RIGHT, indexes);
+        grow_coord_vec(vec, &piece->coord, TOP_RIGHT, indexes);
+        grow_coord_vec(vec, &piece->coord, TOP_LEFT, indexes);
     }
-    return NULL;
+    return vec;
+}
+
+void piece__free_coord_vec(coord_vec_t* vec)
+{
+    for (u8 i = 0; i < vec->len; ++i)
+        free(vec->table[i]);
+
+    free(vec->table);
+    free(vec);
+    return;
 }
 
 piece_t* piece__move_piece(coord_t src, coord_t dst, board_t* board)
@@ -146,7 +208,6 @@ piece_t* piece__move_piece(coord_t src, coord_t dst, board_t* board)
     u8 src_indx = board->indexes[src.n-1];
     //check dest
     board->indexes[dst.n-1] = src_indx;
-    printf("old piece = %u\n", src_indx);
     board->indexes[src.n-1] = 0;
 
     piece_t* curr_piece = &board->pieces[src_indx - 1];

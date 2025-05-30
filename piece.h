@@ -37,7 +37,8 @@ typedef struct _loc_node
 
 piece_t* piece__init(void);
 loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, u8* count);
-coord_t* piece__possible_moves(piece_t* piece, u8* indexes);
+coord_vec_t* piece__possible_moves(piece_t* piece, u8* indexes);
+void piece__free_coord_vec(coord_vec_t* vec);
 void piece__free_capture_chain(loc_node_t** chain, u8 count);
 piece_t* piece__get_from_n(u8 n, board_t* board);
 piece_t* piece__move_piece(coord_t src, coord_t dst, board_t* board);

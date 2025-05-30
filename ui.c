@@ -146,32 +146,69 @@ void ui__loop(board_t* board)
 
             else if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
             {
-                int x = e.button.x;
+                int x = e.button.x; // [ ] fix integer consistency
                 int y = e.button.y;
                 int col = x / CELL_SIZE;
                 int row = y / CELL_SIZE;
                 if ((col % 2 == 0 && row %2 == 0) || (col % 2 != 0 && row % 2 != 0))
                 {
-                    if (coord__is_null(from))
+                    if (coord__is_null(from)) 
                     {
-                        from.x = col;                        
-                        from.y = row;                        
-                        from.n = coord__from_xy(col, row).n;                        
-                        printf("click from [%d:%d:%d]\n", row, col, coord__from_xy(col, row).n);
+                        if (board->indexes[coord__from_xy(col, row).n-1] != 0)
+                        {
+                            if (piece__get_from_n(coord__from_xy(col, row).n, board)->player == board->state)
+                            {
+                                from.x = col;                        
+                                from.y = row;                        
+                                from.n = coord__from_xy(col, row).n; // [x] impose STATE==FREE
+                                printf("selected piece at [ x = %d | y = %d | n = %d ]\n", row, col, coord__from_xy(col, row).n);
+                            }
+                            else
+                                printf("[E] player %u should move!\n", board->state);
+                            
+                            
+                        }
+                        else
+                            printf("[E] tile at [ x = %d | y = %d | n = %d ] is free\n", row, col, coord__from_xy(col, row).n);
+
                     }
                     else
                     {
                         to.x = col;                        
                         to.y = row;                        
-                        to.n = coord__from_xy(col, row).n;                        
-                        printf("click to [%d:%d:%d]\n", row, col, coord__from_xy(col, row).n);
-                        piece__move_piece(from, to, board);
-                        from.x = from.y = from.n = 0;
+                        to.n = coord__from_xy(col, row).n;
+                        if (from.n != to.n)
+                        {
+                            printf("mark location at [ x = %d | y = %d | n = %d ] as destination\n", row, col, coord__from_xy(col, row).n);
+                            piece_t* piece = piece__get_from_n(from.n, board);
+                            coord_vec_t* vec = piece__possible_moves(piece, board->indexes);
+                            for (u8 i = 0; i < vec->len; ++i)
+                            {
+                                if (vec->table[i]->n == to.n)
+                                {
+                                    piece__move_piece(from, to, board);
+                                    printf("piece was moved successfully\n");
+                                    board->state = !board->state;
+                                    break;
+                                }
+                            }
+                            if (piece->coord.n != to.n)
+                                printf("[E] cannot move piece: illegal move\n");
+                                
+                            piece__free_coord_vec(vec);
+                        }
+                        else
+                            printf("[E] cannot move piece: destination is equal to source\n");
+
+                        from.x = from.y = from.n = to.x = to.y = to.n = 0;
                     }
                 }
                 
                 else
-                    printf("click[%d:%d] on white tile\n", row, col);
+                {
+                    from.x = from.y = from.n = to.x = to.y = to.n = 0;
+                    printf("[E] white tiles are discarded\n");
+                }
             }
         }
 

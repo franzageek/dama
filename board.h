@@ -10,6 +10,7 @@ typedef struct _board
     piece_t* pieces;
 } board_t;
 
+
 board_t* board__init(piece_t* pieces);
 void board__free(board_t* board);
 

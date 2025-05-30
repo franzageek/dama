@@ -10,6 +10,12 @@ typedef struct _coord
     u8 n;
 } __attribute__((packed)) coord_t;
 
+typedef struct _coord_vec
+{
+    coord_t** table;
+    u8 len;
+} coord_vec_t;
+
 coord_t coord__from_n(u8 n);
 coord_t coord__from_xy(u8 x, u8 y);
 coord_t coord__from_xyn(u8 x, u8 y, u8 n);
