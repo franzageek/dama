@@ -267,9 +267,9 @@ loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, bool* 
 
 loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, bool* both)
 {
+    loc_node_t** node = NULL;
     if (!piece->king)
     {
-        loc_node_t** node = NULL;
         if (piece->player)
         {
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, BTM_LEFT, NULL);
@@ -280,13 +280,12 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, TOP_RIGHT, NULL);
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, both, TOP_LEFT, node);
         }
-        return node;
     }
     else //TODO: king case
     {
 
     }
-    return NULL;
+    return node;
 }
 
 void piece__free_capture_chain(loc_node_t** chain, bool both)
