@@ -35,7 +35,7 @@ bool ui__SDL3_init(void)
     }
     printdb("done\n");
     printdb("initializing window...");
-    window = SDL_CreateWindow("dama v0.1", WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+    window = SDL_CreateWindow("dama v0.1", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_HIGH_PIXEL_DENSITY);
     if (!window)
     {
         fprintf(stderr, "[SDL3 error] SDL_CreateWindow(): \'%s\'\n", SDL_GetError());
