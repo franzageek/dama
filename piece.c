@@ -29,7 +29,7 @@ coord_state_t calculate_next(coord_t* start, u8* indexes, u8 loc) //
             start->n - ( start->y % 2 != 0 ? 3 : 4 )
         : loc == 3 ?
             start->n - ( start->y % 2 != 0 ? 4 : 5 )
-        : 32
+        : 33
     );
 
     /*
@@ -39,7 +39,7 @@ coord_state_t calculate_next(coord_t* start, u8* indexes, u8 loc) //
     [0]   [1]
     
     */
-    if (next < 32)
+    if (next <= 32)
     {
         if 
         (
@@ -51,7 +51,7 @@ coord_state_t calculate_next(coord_t* start, u8* indexes, u8 loc) //
             coord_t coord = coord__from_n(next);
             if (indexes[next-1] == 0)
             {
-                debug(printf("possible move towards {%u}: [y = %u | x = %u | n = %u]\n", loc, coord.y, coord.x, coord.n));
+                //debug(printf("possible move towards {%u}: [y = %u | x = %u | n = %u]\n", loc, coord.y, coord.x, coord.n));
                 coord_state_t pair = 
                 {
                     .coord = coord,
@@ -195,11 +195,14 @@ coord_vec_t* piece__possible_moves(piece_t* piece, u8* indexes)
 
 void piece__free_coord_vec(coord_vec_t* vec)
 {
-    for (u8 i = 0; i < vec->len; ++i)
-        free(vec->table[i]);
-
-    free(vec->table);
-    free(vec);
+    if (vec)
+    {
+        for (u8 i = 0; i < vec->len; ++i)
+            free(vec->table[i]);
+    
+        free(vec->table);
+        free(vec);
+    }
     return;
 }
 
@@ -245,16 +248,16 @@ loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, u8* co
                         loc_node_t* lnode = NULL;
                         if (!node)
                         {
-                            node = (loc_node_t**)malloc(sizeof(loc_node_t*));
+                            node = (loc_node_t**)calloc(1, sizeof(loc_node_t*));
                             if (!node)
                             {
-                                perror("malloc()");
+                                perror("calloc()");
                                 return NULL;
                             }
-                            *node = (loc_node_t*)malloc(sizeof(loc_node_t));
+                            *node = (loc_node_t*)calloc(1, sizeof(loc_node_t));
                             if (!*node)
                             {
-                                perror("malloc()");
+                                perror("calloc()");
                                 free(node);
                                 return NULL;
                             }
@@ -264,20 +267,20 @@ loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, u8* co
                         {
                             if (*node)
                             {
-                                loc_node_t** sib = (loc_node_t**)malloc(sizeof(loc_node_t*)*((*count) + 1));
+                                loc_node_t** sib = (loc_node_t**)calloc((*count) + 1, sizeof(loc_node_t*));
                                 if (!sib)
                                 {
-                                    perror("malloc()");
+                                    perror("calloc()");
                                     free(*node);
                                     free(node);
                                     return NULL;
                                 }
                                 memmove(sib, node, sizeof(loc_node_t*)*(*count));
                                 free(node);
-                                sib[*count] = (loc_node_t*)malloc(sizeof(loc_node_t));
+                                sib[*count] = (loc_node_t*)calloc(1, sizeof(loc_node_t));
                                 if (!sib[*count])
                                 {
-                                    perror("malloc()");
+                                    perror("calloc()");
                                     free(sib[0]);
                                     free(sib);
                                     return NULL;
@@ -291,8 +294,8 @@ loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, u8* co
                         lnode->loc = loc;
                         memmove(&lnode->capt, &pair0.coord, sizeof(coord_t));
                         memmove(&lnode->dest, &pair1l.coord, sizeof(coord_t));
-                        printf("--can cap %u [%u:%u:%u]--\n", loc, lnode->capt.x, lnode->capt.y, lnode->capt.n);
-                        printf("--can eat %u [%u:%u:%u]--\n", loc, lnode->dest.x, lnode->dest.y, lnode->dest.n);
+                        //printf("--can cap %u [%u:%u:%u]--\n", loc, lnode->capt.x, lnode->capt.y, lnode->capt.n);
+                        //printf("--can eat %u [%u:%u:%u]--\n", loc, lnode->dest.x, lnode->dest.y, lnode->dest.n);
                     }
                 }
             }
@@ -338,7 +341,7 @@ void piece__free_capture_chain(loc_node_t** chain, u8 count)
                 if (chain[i]->next)
                     piece__free_capture_chain(chain[i]->next, chain[i]->count);
                 
-                printf("freeing DST[%u,%u,%u] CAP[%u,%u,%u]\n", chain[i]->dest.x, chain[i]->dest.y, chain[i]->dest.n, chain[i]->capt.x, chain[i]->capt.y, chain[i]->capt.n);
+                //printf("freeing DST[%u,%u,%u] CAP[%u,%u,%u]\n", chain[i]->dest.x, chain[i]->dest.y, chain[i]->dest.n, chain[i]->capt.x, chain[i]->capt.y, chain[i]->capt.n);
                 free(chain[i]);
             }
         }
