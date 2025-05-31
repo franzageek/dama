@@ -4,8 +4,8 @@
 #include <intdef.h> 
 #include "piece.h"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 640
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 800
 #define BOARD_SIZE 8
 #define CELL_SIZE (WINDOW_WIDTH/BOARD_SIZE)
 
