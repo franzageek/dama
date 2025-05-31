@@ -36,7 +36,7 @@ typedef struct _loc_node
 #include "board.h"
 
 piece_t* piece__init(void);
-loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, u8* count);
+loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, u8* count, u8 last_move);
 coord_vec_t* piece__possible_moves(piece_t* piece, u8* indexes);
 void piece__free_coord_vec(coord_vec_t* vec);
 void piece__free_capture_chain(loc_node_t** chain, u8 count);

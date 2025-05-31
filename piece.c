@@ -39,7 +39,7 @@ coord_state_t calculate_next(coord_t* start, u8* indexes, u8 loc) //
     [0]   [1]
     
     */
-    if (next <= 32)
+    if (next > 0 && next <= 32)
     {
         if 
         (
@@ -83,6 +83,7 @@ coord_state_t calculate_next(coord_t* start, u8* indexes, u8 loc) //
 
 piece_t* piece__init(void)
 {
+    printdb("initializing pieces...");
     piece_t* piece = (piece_t*)calloc(12*2, sizeof(piece_t));
     if (!piece)
     {
@@ -113,6 +114,7 @@ piece_t* piece__init(void)
                 0
         );
     }
+    printdb("done\n");
     return piece;
 }
 
@@ -145,6 +147,7 @@ coord_vec_t* piece__possible_moves(piece_t* piece, u8* indexes)
             if (!vec->table)
             {
                 perror("malloc()");
+                free(vec);
                 return NULL;
             }
             vec->len = 0;
@@ -163,6 +166,7 @@ coord_vec_t* piece__possible_moves(piece_t* piece, u8* indexes)
             if (!vec->table)
             {
                 perror("malloc()");
+                free(vec);
                 return NULL;
             }
             vec->len = 0;
@@ -182,6 +186,7 @@ coord_vec_t* piece__possible_moves(piece_t* piece, u8* indexes)
         if (!vec->table)
         {
             perror("malloc()");
+            free(vec);
             return NULL;
         }
         vec->len = 0;
@@ -238,7 +243,15 @@ loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, u8* co
     {
         if (pair0.state == STATE_BUSY)
         {
-            if (piece__get_from_n(pair0.coord.n, board) && piece__get_from_n(pair0.coord.n, board)->player != piece->player)
+            if 
+            (
+                piece__get_from_n(pair0.coord.n, board) && 
+                piece__get_from_n(pair0.coord.n, board)->player != piece->player && 
+                (
+                    (piece->king == piece__get_from_n(pair0.coord.n, board)->king) ||
+                    (piece->king && !piece__get_from_n(pair0.coord.n, board)->king)
+                ) 
+            )
             {
                 coord_state_t pair1l = calculate_next(&pair0.coord, board->indexes, loc);
                 if (!coord__is_null(pair1l.coord))
@@ -288,9 +301,15 @@ loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, u8* co
                                 lnode = sib[*count];
                                 node = sib;
                             }
+                            else
+                            {
+                                fprintf(stderr, "[E] unknown error on line %d\n", __LINE__);
+                                free(node);
+                                return NULL;
+                            }
                         }
                         *count += 1;
-                        lnode->next = piece__possible_captures(piece, board, &pair1l.coord, &lnode->count);
+                        lnode->next = piece__possible_captures(piece, board, &pair1l.coord, &lnode->count, loc);
                         lnode->loc = loc;
                         memmove(&lnode->capt, &pair0.coord, sizeof(coord_t));
                         memmove(&lnode->dest, &pair1l.coord, sizeof(coord_t));
@@ -304,10 +323,24 @@ loc_node_t** get_node(piece_t* piece, board_t* board, coord_t* aux_coord, u8* co
     return node; //fix leak
 }
 
-loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, u8* count)
+loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* aux_coord, u8* count, u8 last_move)
 {
     loc_node_t** node = NULL;
-    if (!piece->king)
+    if (piece->king)
+    {
+        node = NULL;
+        for (u8 i = 0; i < 4; ++i)
+        {
+            if (last_move < 4)
+            {
+                if (i != (last_move+2)%4)
+                    node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, count, i, node);
+            }
+            else
+                node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, count, i, node);
+        }
+    }
+    else // [x]: king case
     {
         if (piece->player)
         {
@@ -319,13 +352,6 @@ loc_node_t** piece__possible_captures(piece_t* piece, board_t* board, coord_t* a
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, count, TOP_RIGHT, NULL);
             node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, count, TOP_LEFT, node);
         }
-    }
-    else // [x]: king case
-    {
-        node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, count, BTM_LEFT, NULL);
-        node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, count, BTM_RIGHT, node);
-        node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, count, TOP_RIGHT, node);
-        node = get_node(piece, board, aux_coord == NULL ? &piece->coord : aux_coord, count, TOP_LEFT, node);
     }
     return node;
 }
