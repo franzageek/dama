@@ -3,6 +3,27 @@
 #include <SDL3/SDL.h>
 #include <stdio.h>
 
+bool can_become_king(piece_t* piece)
+{
+    if (piece->player)
+    {
+        if (piece->coord.y == 7 && !piece->king)
+        {
+            piece->king = true;
+            return true;        
+        }
+    }
+    else
+    {
+        if (piece->coord.y == 0 && !piece->king)
+        {
+            piece->king = true;
+            return true;        
+        }
+    }
+    return false;
+}
+
 void get_max_capture_depth(loc_node_t** chain, u8 count, u8* depth, u8 level)
 {
     if (chain)
@@ -68,7 +89,7 @@ void game__loop(board_t* board)
                 int y = e.button.y;
                 int col = x / CELL_SIZE;
                 int row = y / CELL_SIZE;
-                if ((col % 2 == 0 && row %2 == 0) || (col % 2 != 0 && row % 2 != 0))
+                if ((col % 2 == 0) == (row %2 == 0))
                 {
                     if (coord__is_null(from)) 
                     {
@@ -85,7 +106,6 @@ void game__loop(board_t* board)
                             else
                                 printf("[E] it's player %u's turn!\n", board->state);
                             
-                            
                         }
                         else
                             printf("[E] tile at [ x = %d | y = %d | n = %d ] is free\n", row, col, coord__from_xy(col, row).n);
@@ -101,7 +121,7 @@ void game__loop(board_t* board)
                             printf("mark location at [ x = %d | y = %d | n = %d ] as destination\n", row, col, coord__from_xy(col, row).n);
                             piece_t* piece = piece__get_from_n(from.n, board);
                             u8 count = 0;
-                            loc_node_t** chain = piece__possible_captures(piece, board, NULL, &count);
+                            loc_node_t** chain = piece__possible_captures(piece, board, NULL, &count, 4);
                             if (chain)
                             {
                                 bool reached = false;
@@ -109,7 +129,9 @@ void game__loop(board_t* board)
                                 get_max_capture_depth(chain, count, &max_depth, 0);
                                 capture(piece, board, chain, count, max_depth, 0, &reached);
                                 piece__free_capture_chain(chain, count);
-                                board->state = !board->state;
+                                if (!can_become_king(piece))
+                                    board->state = !board->state;
+                                
                                 from.x = from.y = from.n = to.x = to.y = to.n = 0;
                                 continue;
                             }
@@ -120,15 +142,18 @@ void game__loop(board_t* board)
                                 {
                                     piece__move_piece(from, to, board);
                                     printf("piece was moved successfully\n");
-                                    board->state = !board->state;
+                                    if (!can_become_king(piece))
+                                        board->state = !board->state;
+                                    
                                     break;
                                 }
                             }
                             piece__free_coord_vec(vec);
-                            
+
                             if (piece->coord.n != to.n)
-                                printf("[E] cannot move piece: illegal move\n");
+                                printf("[E] cannot move piece: illegal move\n");   
                                 
+
                         }
                         else
                             printf("[E] cannot move piece: destination is equal to source\n");
@@ -136,7 +161,6 @@ void game__loop(board_t* board)
                         from.x = from.y = from.n = to.x = to.y = to.n = 0;
                     }
                 }
-                
                 else
                 {
                     from.x = from.y = from.n = to.x = to.y = to.n = 0;

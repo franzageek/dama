@@ -1,5 +1,5 @@
 #ifndef GAME_H
-#define GAME_C
+#define GAME_H
 
 #include <intdef.h>
 
