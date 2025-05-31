@@ -28,17 +28,19 @@ void capture(piece_t* piece, board_t* board, loc_node_t** chain, u8 count, u8 ma
             if (chain[i]->next)
                 capture(piece, board, chain[i]->next, chain[i]->count, max_level, level+1, reached);
             
-            if (!*reached)
+            if (*reached)
             {
                 piece__get_from_n(chain[i]->capt.n, board)->valid = false;
+                board->indexes[chain[i]->capt.n-1] = 0; //merge or move to bottom
                 return;
             }
-            
+
             if (level == max_level)
             {
                 *reached = true;
                 piece__move_piece(piece->coord, chain[i]->dest, board);
                 piece__get_from_n(chain[i]->capt.n, board)->valid = false;
+                board->indexes[chain[i]->capt.n-1] = 0;
                 return;
             }
         }
@@ -107,6 +109,9 @@ void game__loop(board_t* board)
                                 get_max_capture_depth(chain, count, &max_depth, 0);
                                 capture(piece, board, chain, count, max_depth, 0, &reached);
                                 piece__free_capture_chain(chain, count);
+                                board->state = !board->state;
+                                from.x = from.y = from.n = to.x = to.y = to.n = 0;
+                                continue;
                             }
                             coord_vec_t* vec = piece__possible_moves(piece, board->indexes);
                             for (u8 i = 0; i < vec->len; ++i)
@@ -119,10 +124,11 @@ void game__loop(board_t* board)
                                     break;
                                 }
                             }
+                            piece__free_coord_vec(vec);
+                            
                             if (piece->coord.n != to.n)
                                 printf("[E] cannot move piece: illegal move\n");
                                 
-                            piece__free_coord_vec(vec);
                         }
                         else
                             printf("[E] cannot move piece: destination is equal to source\n");
