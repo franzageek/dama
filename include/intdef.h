@@ -23,8 +23,10 @@ typedef int64_t i64;
 
 #ifdef DEBUG    
 #define debug(cmd...) cmd
+#define printdb(msg...) printf(msg)
 #else
 #define debug(cmd...)
+#define printdb(msg...)
 #endif
 
 #endif

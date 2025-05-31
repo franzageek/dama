@@ -5,6 +5,7 @@
 
 int main(void)
 {
+    printf("dama v0.1\n");
     board_t* board = board__init(piece__init());
     if (!board)
         return 1;
@@ -20,5 +21,6 @@ int main(void)
     game__loop(board);
     ui__quit_SDL3();
     board__free(board);
+    printf("Thanks for playing dama ;)\n");
     return 0;
 }
