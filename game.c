@@ -3,6 +3,8 @@
 #include <SDL3/SDL.h>
 #include <stdio.h>
 
+
+
 bool can_become_king(piece_t* piece)
 {
     if (piece->player)
@@ -101,14 +103,14 @@ void game__loop(board_t* board)
                                 from.y = row;                        
                                 from.n = coord__from_xy(col, row).n; // [x] impose STATE==FREE
 
-                                printf("selected piece at [ x = %d | y = %d | n = %d ]\n", row, col, coord__from_xy(col, row).n);
+                                printdb("selected piece at [ x = %d | y = %d | n = %d ]\n", row, col, coord__from_xy(col, row).n);
                             }
                             else
                                 printf("[E] it's player %u's turn!\n", board->state);
                             
                         }
                         else
-                            printf("[E] tile at [ x = %d | y = %d | n = %d ] is free\n", row, col, coord__from_xy(col, row).n);
+                            printdb("[E] tile at [ x = %d | y = %d | n = %d ] is free\n", row, col, coord__from_xy(col, row).n);
 
                     }
                     else
@@ -118,7 +120,7 @@ void game__loop(board_t* board)
                         to.n = coord__from_xy(col, row).n;
                         if (from.n != to.n)
                         {
-                            printf("mark location at [ x = %d | y = %d | n = %d ] as destination\n", row, col, coord__from_xy(col, row).n);
+                            printdb("mark location at [ x = %d | y = %d | n = %d ] as destination\n", row, col, coord__from_xy(col, row).n);
                             piece_t* piece = piece__get_from_n(from.n, board);
                             u8 count = 0;
                             loc_node_t** chain = piece__possible_captures(piece, board, NULL, &count, 4);
@@ -141,7 +143,7 @@ void game__loop(board_t* board)
                                 if (vec->table[i]->n == to.n)
                                 {
                                     piece__move_piece(from, to, board);
-                                    printf("piece was moved successfully\n");
+                                    printdb("piece was moved successfully\n");
                                     if (!can_become_king(piece))
                                         board->state = !board->state;
                                     
@@ -151,12 +153,12 @@ void game__loop(board_t* board)
                             piece__free_coord_vec(vec);
 
                             if (piece->coord.n != to.n)
-                                printf("[E] cannot move piece: illegal move\n");   
+                                printdb("[E] cannot move piece: illegal move\n");   
                                 
 
                         }
                         else
-                            printf("[E] cannot move piece: destination is equal to source\n");
+                            printdb("[E] cannot move piece: destination is equal to source\n");
 
                         from.x = from.y = from.n = to.x = to.y = to.n = 0;
                     }
@@ -164,7 +166,7 @@ void game__loop(board_t* board)
                 else
                 {
                     from.x = from.y = from.n = to.x = to.y = to.n = 0;
-                    printf("[E] white tiles are discarded\n");
+                    printdb("[E] white tiles are discarded\n");
                 }
             }
         }
