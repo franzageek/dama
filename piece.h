@@ -6,9 +6,9 @@
 typedef struct _piece
 {
     coord_t coord;
-    u8 player;
-    u8 king;
-    u8 valid;
+    bool player;
+    bool king;
+    bool valid;
 } __attribute__((packed)) piece_t;
 
 typedef enum _rel_loc_name
