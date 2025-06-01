@@ -18,6 +18,7 @@ We split up the main logic in two parts:
     - whether it is a king or not (`bool king`);
 - a 4x8 array of bytes (the so-called `a32`) which represents all the black tiles: each byte holds the index in the `piece_t` array of the piece that sits on top of it. This is extremely efficient when moving pieces, as you just have to move the index from a tile to another and then clear the old one.
 <br>
+
 There is an additional `board_t` structure which holds three main properties:
 - whose turn it is;
 - a pointer to the `piece_t` array;
