@@ -5,7 +5,7 @@ A Checkers implementation in C
 dama (which is the italian word for the Checkers game) first started as an attempt by [@Raparubata](https://github.com/Raparubata) and me to "serialize" and enumerate all the practices involved in the game.<br>
 We quickly discovered that the structure was pretty simple, so we started by laying out a base for a C implementation of the game. We planned out every aspect of it and then translated our logic into code. 
 After figuring out all the logic (moves, captures and multiple captures), I wrote a basic GUI using SDL3 for us to be able to tinker with the game and discover eventual problems in a more "visual" way. 
-We didn't even thing about building a GUI at first, our original idea was to prompt the user for some X,Y coordinates of a specific source piece and then prompt them again for a destination, all while writing a bunch of `[ ]` and `[O]` representing empty tiles and busy tiles.<br>
+We didn't even think once of building a GUI at first, our original idea was to prompt the user for some X,Y coordinates of a specific source piece and then prompt them again for a destination, all while writing a bunch of `[ ]` and `[O]` representing empty tiles and busy tiles.<br>
 It then turned out to be a lot easier for us to build a full-fledged GUI using some simple cross-platform video framework such as SDL.
 It took about a week's worth of efforts to effectively build the game piece-by-piece, and then another three days for it to turn into something vaguely resembling a chess board with some functional pieces.
 
