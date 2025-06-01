@@ -96,6 +96,7 @@ void ui__draw_board(void)
             SDL_RenderFillRect(renderer, &rect);
         }
     }
+    return;
 }
 
 void render_circle(SDL_Color color, u16 cx, u16 cy, i32 radius)
@@ -137,6 +138,7 @@ void draw_circle_at_xy(coord_t coord, u16 radius, SDL_Color color)
     u16 cy = row * CELL_SIZE + CELL_SIZE / 2;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     render_circle(color, cx, cy, radius);
+    return;
 }
 
 void ui__draw_hints(coord_t coord, board_t* board, bool capture_available)
@@ -215,13 +217,11 @@ void ui__draw_pieces(board_t* board)
                 if (!piece__get_from_n(i+1, board)->king)
                 {
                     if (piece__get_from_n(i+1, board)->player)
-                    {
                         render_circle(light_piece, cx, cy, radius);
-                    }
+                    
                     else    
-                    {
                         render_circle(dark_piece, cx, cy, radius);
-                    }
+                    
                 }
                 else
                 {
