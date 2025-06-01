@@ -1,5 +1,5 @@
 # dama
-A Checkers implementation in C
+A very basic Checkers implementation in C
 
 ## Introduction
 dama (which is the italian word for the Checkers game) first started as an attempt by [@Raparubata](https://github.com/Raparubata) and me to "serialize" and enumerate all the practices involved in the game.<br>
