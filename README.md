@@ -27,7 +27,7 @@ There is an additional `board_t` structure which holds three main properties:
 ## Directory structure
 - `board.h` and `board.c`: board structure and functions to allocate/free space for it;
 - `coord.h` and `coord.c`: structures and helper functions for working with the coordinate system used throughout the whole program;
-- `game.h` and `game.c`: core game logic (main loop, click handling, moves and captures calculation);
+- `game.h` and `game.c`: core game logic (main loop, click handling, move and capture calculation);
 - `piece.h` and `piece.c`: structures for pieces, tiles and capture chains, along with functions to move pieces, calculate moves and captures that are mainly used inside `game.c`;
 - `ui.h` and `ui.c`: SDL3 initialization code, along with functions to draw cirlces and rectangles that are then used to draw tiles and pieces in `game.c`;
-- `main.c`: calls to functions for initializing SD3, call to main game loop, calls to destruction functions.
+- `main.c`: calls to functions for initializing SDL3, call to main game loop, calls to destruction functions.
