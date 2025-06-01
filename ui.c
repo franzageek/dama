@@ -18,11 +18,29 @@ SDL_Color dark_piece = {179, 163, 148, 255};
 SDL_Color light_tile = {205, 215, 214, 255};
 SDL_Color dark_tile = {16,37,66, 255};*/
 
-SDL_Color light_piece = {244,211,94, 255};
+/*SDL_Color light_piece = {244,211,94, 255};
 SDL_Color dark_piece = {218, 65, 103, 255};
 
 SDL_Color light_tile = {235, 235, 211, 255};
-SDL_Color dark_tile = {8,61,119, 255};
+SDL_Color dark_tile = {8,61,119, 255};*/
+
+/*SDL_Color light_tile = {171,129,205,255};
+SDL_Color dark_tile = {43,42,104,255};
+
+SDL_Color light_piece = {87,74,226,255};
+SDL_Color dark_piece = {226,173,242,255};*/
+
+/*SDL_Color light_tile = {235,235,211,255};
+SDL_Color dark_tile = {8,61,119,255};
+
+SDL_Color light_piece = {238,150,75,255};
+SDL_Color dark_piece = {249,87,56,255};*/
+
+SDL_Color light_tile = {188,196,219,255};
+SDL_Color dark_tile = {105,135,201,255};
+
+SDL_Color light_piece = {107,186,236,255};
+SDL_Color dark_piece = {192,169,176,255};
 
 bool ui__SDL3_init(void)
 {
