@@ -18,6 +18,4 @@ bool ui__draw_capture_hints(coord_t coord, board_t* board);
 void* ui__get_renderer(void); // use void* to prevent including SDL.h
 void* ui__get_window(void);
 
-extern int window;
-
 #endif
