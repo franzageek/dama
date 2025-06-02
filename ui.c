@@ -40,7 +40,8 @@ SDL_Color light_tile = {188,196,219,255};
 SDL_Color dark_tile = {105,135,201,255};
 
 SDL_Color light_piece = {107,186,236,255};
-SDL_Color dark_piece = {192,169,176,255};
+SDL_Color dark_piece = {8,61-20,119-20,255};
+//SDL_Color dark_piece = {192,169,176,255};
 
 bool ui__SDL3_init(void)
 {
@@ -150,7 +151,8 @@ void ui__draw_hints(coord_t coord, board_t* board, bool capture_available)
         for (u8 i = 0; i < vec->len; ++i)
         {
             u16 radius = CELL_SIZE / 2 - 6;
-            SDL_Color color = (SDL_Color){100, 200, 200, 200};
+            //SDL_Color color = (SDL_Color){100, 200, 200, 200};
+            SDL_Color color = (SDL_Color){200, 200, 100, 100};
             draw_circle_at_xy(coord__from_xy(vec->table[i]->x, vec->table[i]->y), radius, color);
         }
         piece__free_coord_vec(vec);
@@ -171,7 +173,7 @@ void draw_capture_hint_circle(loc_node_t** chain, u8 count)
             SDL_Color color = (SDL_Color){200, 200, 100, 100};
             draw_rect_at_xy(chain[i]->capt, color);
             radius = CELL_SIZE / 2 - 6;
-            color = (SDL_Color){255, 100, 50, 255};
+            color = (SDL_Color){220, 100, 50, 255};
             draw_circle_at_xy(chain[i]->capt, radius, color);
             radius = CELL_SIZE / 2 - 6;
             color = (SDL_Color){200, 200, 100, 100};
