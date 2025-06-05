@@ -5,25 +5,19 @@
 
 
 
-bool can_become_king(piece_t* piece)
+void can_become_king(piece_t* piece)
 {
     if (piece->player)
     {
         if (piece->coord.y == 7 && !piece->king)
-        {
             piece->king = true;
-            return true;        
-        }
     }
     else
     {
         if (piece->coord.y == 0 && !piece->king)
-        {
             piece->king = true;
-            return true;        
-        }
     }
-    return false;
+    return;
 }
 
 void get_max_capture_depth(loc_node_t** chain, u8 count, u8* depth, u8 level)
@@ -131,8 +125,8 @@ void game__loop(board_t* board)
                                 get_max_capture_depth(chain, count, &max_depth, 0);
                                 capture(piece, board, chain, count, max_depth, 0, &reached);
                                 piece__free_capture_chain(chain, count);
-                                if (!can_become_king(piece))
-                                    board->state = !board->state;
+                                can_become_king(piece);
+                                board->state = !board->state;
                                 
                                 from.x = from.y = from.n = to.x = to.y = to.n = 0;
                                 continue;
@@ -144,8 +138,8 @@ void game__loop(board_t* board)
                                 {
                                     piece__move_piece(from, to, board);
                                     printdb("piece was moved successfully\n");
-                                    if (!can_become_king(piece))
-                                        board->state = !board->state;
+                                    can_become_king(piece);
+                                    board->state = !board->state;
                                     
                                     break;
                                 }
