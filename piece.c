@@ -26,10 +26,14 @@ coord_state_t calculate_next(coord_t* start, u8* indexes, u8 loc) //
         : loc == 1 ?
             start->n + ( start->y % 2 != 0 ? 5 : 4 )
         : loc == 2 ?
-            start->n - ( start->y % 2 != 0 ? 3 : 4 )
+            start->y == 0 ?
+                0
+            : start->n - ( start->y % 2 != 0 ? 3 : 4 )
         : loc == 3 ?
-            start->n - ( start->y % 2 != 0 ? 4 : 5 )
-        : 33
+            start->y == 0 ?
+                0
+            : start->n - ( start->y % 2 != 0 ? 4 : 5 )
+        : 0
     );
 
     /*
